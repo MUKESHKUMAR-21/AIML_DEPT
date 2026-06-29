@@ -6,21 +6,21 @@ This portal implements three distinct user portals: **Admin**, **Faculty**, and 
 
 ---
 
-## 🚀 Features
+## Features
 
-### 👤 Admin Portal
+### Admin Portal
 - **User Management**: Add, update, and manage student and faculty credentials and access rights.
 - **Leave Operations**: Review and approve/reject leave requests submitted by faculty and students.
 - **System Logs**: Oversee department schedules, announcements, and general system updates.
 
-### 👨‍🏫 Faculty Portal
+### Faculty Portal
 - **Attendance Registry**: Mark and view student attendance per subject and date.
 - **Academics & Grades**: Input and upload results/marks for different courses.
 - **Assignment Hub**: Create assignments with descriptions and custom deadlines.
 - **Study Materials**: Upload syllabus, books, and lecture notes.
 - **Timetable**: View active class schedules.
 
-### 🎓 Student Portal
+### Student Portal
 - **Dashboard Overview**: Check aggregate attendance, semester details, and CGPA/grades.
 - **Assignment Submissions**: View posted assignments, track deadlines, and submit files directly through the portal.
 - **Timetables & Syllabus**: View daily class timings, classroom numbers, and active courses.
@@ -29,7 +29,7 @@ This portal implements three distinct user portals: **Admin**, **Faculty**, and 
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Backend**: Python 3.x, Flask (3.1.3)
 - **Database**: SQLite (managed with Flask-SQLAlchemy)
@@ -40,7 +40,7 @@ This portal implements three distinct user portals: **Admin**, **Faculty**, and 
 
 ---
 
-## 📦 Directory Structure
+## Directory Structure
 
 ```
 AIML_DEPT/
@@ -68,7 +68,7 @@ AIML_DEPT/
 
 ---
 
-## ⚙️ Installation & Setup
+## Installation & Setup
 
 1. **Clone the Repository**:
    ```bash
@@ -106,7 +106,7 @@ AIML_DEPT/
 
 ---
 
-## 🔒 Default Login Credentials (for Testing)
+## Default Login Credentials (for Testing)
 
 You can use the following default accounts created by the seed scripts to test different user experiences:
 
