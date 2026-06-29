@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Course Assignments{% endblock %}
+
+{% block content %}
+<div class="header" style="margin-bottom: 2rem;">
+    <h1 style="font-size: 2.2rem; font-weight: 800;">Coursework & Assignments</h1>
+    <p style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 1.1rem;">Manage your upcoming deadlines and submit your work.</p>
+</div>
+
+<div class="glass-panel animate-fade-in">
+    <h3 style="margin-bottom: 1.5rem; font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+        <i class="fa-solid fa-list-ul" style="color: var(--primary-color);"></i> Pending & Active Assignments
+    </h3>
+    
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        {% for assignment in assignments %}
+        {% set sub = submissions.get(assignment.id) %}
+        {% if sub %}
+        <div style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 8px; border-left: 3px solid var(--success); display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+        {% else %}
+        <div style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 8px; border-left: 3px solid var(--primary-color); display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+        {% endif %}
+            <div style="flex: 1; min-width: 300px;">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                    <h4 style="font-weight: 600; font-size: 1.2rem; margin: 0;">{{ assignment.title }}</h4>
+                    {% if sub %}
+                        <span class="badge badge-success"><i class="fa-solid fa-check"></i> Submitted</span>
+                    {% else %}
+                        <span class="badge badge-warning"><i class="fa-solid fa-clock"></i> Pending</span>
+                    {% endif %}
+                </div>
+                <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1rem;">{{ assignment.description }}</p>
+                <div style="color: var(--text-muted); font-size: 0.85rem;">
+                    <i class="fa-solid fa-calendar-xmark" style="color: var(--danger);"></i> Deadline: <span style="font-weight: 500;">{{ assignment.deadline.strftime('%Y-%m-%d %H:%M') }}</span>
+                </div>
+            </div>
+            
+            <div style="min-width: 250px;">
+                {% if sub %}
+                <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 8px; padding: 1rem; text-align: center;">
+                    <i class="fa-solid fa-file-circle-check" style="font-size: 2rem; color: var(--success); margin-bottom: 0.5rem;"></i>
+                    <div style="font-size: 0.9rem; color: var(--success); font-weight: 500;">Submission Received</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">{{ sub.submitted_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                    <a href="{{ sub.file_path }}" target="_blank" class="btn btn-outline" style="margin-top: 1rem; width: 100%; font-size: 0.85rem; padding: 0.4rem;">View Submitted File</a>
+                </div>
+                {% else %}
+                <form method="POST" action="{{ url_for('student_assignments') }}" style="background: rgba(0, 0, 0,0.02); border: 1px dashed var(--glass-border); border-radius: 8px; padding: 1rem;">
+                    <input type="hidden" name="assignment_id" value="{{ assignment.id }}">
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Provide File Link (Drive/GitHub)</label>
+                        <input type="url" name="file_path" required placeholder="https://..." style="width: 100%; padding: 0.6rem; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 6px; color: var(--text-primary); font-size: 0.85rem;">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 0.9rem; padding: 0.6rem;">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Submit Work
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 3rem; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px dashed var(--glass-border);">
+            <i class="fa-solid fa-clipboard-check" style="font-size: 3rem; color: var(--success); margin-bottom: 1rem; opacity: 0.5;"></i>
+            <h4 style="font-size: 1.2rem; color: var(--text-primary); margin-bottom: 0.5rem;">All Caught Up!</h4>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">There are no active assignments at the moment.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

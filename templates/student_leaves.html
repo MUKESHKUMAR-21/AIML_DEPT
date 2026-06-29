@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Leave Requests{% endblock %}
+
+{% block content %}
+<div class="header" style="margin-bottom: 2rem;">
+    <h1 style="font-size: 2.2rem; font-weight: 800;">Leave & Outpass Requests</h1>
+    <p style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 1.1rem;">Submit and track your official absence or gate pass requests.</p>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem;">
+    <!-- Apply Leave Form -->
+    <div class="glass-panel animate-fade-in">
+        <h3 style="margin-bottom: 1.5rem; font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-file-signature" style="color: var(--primary-color);"></i> New Request
+        </h3>
+        <form method="POST" action="{{ url_for('student_leaves') }}">
+            <div class="form-group" style="margin-bottom: 1.2rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Start Date</label>
+                <input type="date" name="start_date" required style="width: 100%; padding: 0.8rem; background: rgba(0, 0, 0,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary);">
+            </div>
+            <div class="form-group" style="margin-bottom: 1.2rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">End Date</label>
+                <input type="date" name="end_date" required style="width: 100%; padding: 0.8rem; background: rgba(0, 0, 0,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary);">
+            </div>
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Reason for Leave</label>
+                <textarea name="reason" rows="4" required placeholder="Provide a detailed reason..." style="width: 100%; padding: 0.8rem; background: rgba(0, 0, 0,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary); resize: vertical;"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                <i class="fa-solid fa-paper-plane"></i> Submit Application
+            </button>
+        </form>
+    </div>
+
+    <!-- Request History -->
+    <div class="glass-panel animate-fade-in" style="animation-delay: 0.1s;">
+        <h3 style="margin-bottom: 1.5rem; font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-clock-rotate-left" style="color: var(--primary-color);"></i> Request History
+        </h3>
+        
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            {% for req in requests %}
+            <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 8px; padding: 1.2rem; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4 style="font-weight: 500; font-size: 1.1rem; margin-bottom: 0.25rem;">Leave Request</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">{{ req.reason }}</p>
+                    <div style="display: flex; gap: 1.5rem; font-size: 0.85rem; color: var(--text-muted);">
+                        <span><i class="fa-regular fa-calendar" style="color: var(--info);"></i> {{ req.start_date.strftime('%d %b, %Y') }} - {{ req.end_date.strftime('%d %b, %Y') }}</span>
+                        <span>Applied: {{ req.applied_at.strftime('%Y-%m-%d') }}</span>
+                    </div>
+                </div>
+                <div>
+                    {% if req.status == 'Pending' %}
+                        <span class="badge badge-warning" style="padding: 0.5rem 1rem;"><i class="fa-solid fa-hourglass-half"></i> Pending</span>
+                    {% elif req.status == 'Approved' %}
+                        <span class="badge badge-success" style="padding: 0.5rem 1rem;"><i class="fa-solid fa-check"></i> Approved</span>
+                    {% else %}
+                        <span class="badge badge-danger" style="padding: 0.5rem 1rem;"><i class="fa-solid fa-xmark"></i> Rejected</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 3rem; background: rgba(0, 0, 0,0.02); border-radius: 8px; border: 1px dashed var(--glass-border);">
+                <i class="fa-solid fa-file-shield" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem; opacity: 0.5;"></i>
+                <p style="color: var(--text-secondary);">You have no past leave applications.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

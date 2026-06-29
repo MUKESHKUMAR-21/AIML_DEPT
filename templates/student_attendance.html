@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header">
+    <h1 style="font-size: 2rem; font-weight: 700;">My Attendance</h1>
+</div>
+
+<!-- Aggregated Summary Cards -->
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+    {% for course, stats in aggregated.items() %}
+    {% if stats.total > 0 %}
+    <div class="glass-panel animate-fade-in" style="padding: 1.5rem;">
+        <h3 style="font-size: 1.1rem; color: var(--text-primary); margin-bottom: 1rem;">{{ course }}</h3>
+        
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
+            <span style="color: var(--text-secondary);">Classes: {{ stats.total }}</span>
+        </div>
+        
+        <div style="width: 100%; background: rgba(0,0,0,0.1); border-radius: 10px; height: 18px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 1rem;">
+            <div {% if true %}style="height: 100%; width: {{ stats.percentage }}%; background: var(--success); border-radius: 10px; display: flex; align-items: center; justify-content: center; transition: width 1s ease-in-out;"{% endif %}>
+                {% if stats.percentage > 5 %}
+                <span style="color: white; font-size: 0.75rem; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">{{ stats.percentage }}%</span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; font-size: 0.85rem;">
+            <span style="color: var(--success);"><i class="fa-solid fa-check"></i> {{ stats.present }}</span>
+            <span style="color: var(--danger);"><i class="fa-solid fa-xmark"></i> {{ stats.absent }}</span>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+
+<!-- Raw History Table -->
+<h2 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--text-primary);">Recent History</h2>
+<div class="glass-panel animate-fade-in">
+    {% if records %}
+    <div style="overflow-x: auto; border-radius: 12px;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead style="background: rgba(0, 0, 0,0.05); border-bottom: 1px solid var(--glass-border);">
+                <tr>
+                    <th style="padding: 1rem; font-weight: 600; color: var(--text-secondary);">Date</th>
+                    <th style="padding: 1rem; font-weight: 600; color: var(--text-secondary);">Course</th>
+                    <th style="padding: 1rem; font-weight: 600; color: var(--text-secondary);">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr style="border-bottom: 1px solid rgba(0, 0, 0,0.05);">
+                    <td style="padding: 1rem; color: var(--text-primary);">{{ record.date.strftime('%d %b %Y') }}</td>
+                    <td style="padding: 1rem; color: var(--text-primary); font-weight: 500;">{{ record.subject }}</td>
+                    <td style="padding: 1rem;">
+                        {% if record.status == 'Present' %}
+                        <span style="background: rgba(16, 185, 129, 0.1); color: var(--success); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: bold;">Present</span>
+                        {% else %}
+                        <span style="background: rgba(239, 68, 68, 0.1); color: var(--danger); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: bold;">Absent</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p style="color: var(--text-secondary); text-align: center; padding: 2rem;">No attendance records found yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

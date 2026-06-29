@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Leaves{% endblock %}
+
+{% block content %}
+<div class="header" style="margin-bottom: 2rem;">
+    <h1 style="font-size: 2.2rem; font-weight: 800;">Manage Leaves & Outpasses</h1>
+    <p style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 1.1rem;">Review and process student absence applications.</p>
+</div>
+
+<div class="glass-panel animate-fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-users-viewfinder" style="color: var(--primary-color);"></i> Student Applications
+        </h3>
+        <div style="position: relative;">
+            <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 0.8rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.85rem;"></i>
+            <input type="text" id="leaveSearch" class="form-control" placeholder="Search by name or roll..." style="padding: 0.4rem 0.8rem 0.4rem 2rem; font-size: 0.85rem; width: 250px;">
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="data-table" id="leaveTable">
+            <thead>
+                <tr>
+                    <th>Student Info</th>
+                    <th>Leave Dates</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in requests %}
+                <tr>
+                    <td>
+                        <div style="font-weight: 600;">{{ req.student.student_profile.full_name if req.student.student_profile else req.student.username }}</div>
+                        <div style="color: var(--text-muted); font-size: 0.85rem; font-family: monospace;">{{ req.student.student_profile.roll_number if req.student.student_profile else '#'+req.student.id|string }}</div>
+                    </td>
+                    <td>
+                        <div style="font-size: 0.9rem;">
+                            <span style="color: var(--success);">{{ req.start_date.strftime('%d %b, %Y') }}</span>
+                            <i class="fa-solid fa-arrow-right" style="color: var(--text-muted); font-size: 0.7rem; margin: 0 0.25rem;"></i>
+                            <span style="color: var(--danger);">{{ req.end_date.strftime('%d %b, %Y') }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <p style="margin: 0; color: var(--text-secondary); max-width: 250px; font-size: 0.9rem;" title="{{ req.reason }}">{{ req.reason }}</p>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Applied: {{ req.applied_at.strftime('%Y-%m-%d') }}</div>
+                    </td>
+                    <td>
+                        {% if req.status == 'Pending' %}
+                            <span class="badge badge-warning">Pending</span>
+                        {% elif req.status == 'Approved' %}
+                            <span class="badge badge-success">Approved</span>
+                        {% else %}
+                            <span class="badge badge-danger">Rejected</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if req.status == 'Pending' %}
+                        <div style="display: flex; gap: 0.5rem;">
+                            <form method="POST" action="{{ url_for('update_leave', req_id=req.id) }}" style="margin: 0;">
+                                <input type="hidden" name="status" value="Approved">
+                                <button type="submit" class="btn btn-outline" style="padding: 0.3rem 0.6rem; color: var(--success); border-color: rgba(16, 185, 129, 0.3);" title="Approve">
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                            </form>
+                            <form method="POST" action="{{ url_for('update_leave', req_id=req.id) }}" style="margin: 0;">
+                                <input type="hidden" name="status" value="Rejected">
+                                <button type="submit" class="btn btn-outline" style="padding: 0.3rem 0.6rem; color: var(--danger); border-color: rgba(239, 68, 68, 0.3);" title="Reject">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </form>
+                        </div>
+                        {% else %}
+                            <span style="color: var(--text-muted); font-size: 0.85rem;"><i class="fa-solid fa-lock"></i> Processed</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">No leave requests pending.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    document.getElementById('leaveSearch').addEventListener('keyup', function() {
+        let filter = this.value.toLowerCase();
+        let rows = document.querySelectorAll('#leaveTable tbody tr');
+        
+        rows.forEach(row => {
+            let text = row.innerText.toLowerCase();
+            if(text.includes(filter)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}

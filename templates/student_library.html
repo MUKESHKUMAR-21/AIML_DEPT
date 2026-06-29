@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}E-Library{% endblock %}
+
+{% block content %}
+<div class="header" style="margin-bottom: 2rem;">
+    <h1 style="font-size: 2.2rem; font-weight: 800;">E-Library Repository</h1>
+    <p style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 1.1rem;">Access course materials, notes, and datasets provided by faculty.</p>
+</div>
+
+<div class="glass-panel animate-fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-book-bookmark" style="color: var(--primary-color);"></i> Available Resources
+        </h3>
+        <div style="position: relative;">
+            <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 0.8rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.85rem;"></i>
+            <input type="text" id="libSearch" class="form-control" placeholder="Search materials..." style="padding: 0.4rem 0.8rem 0.4rem 2rem; font-size: 0.85rem; width: 250px;">
+        </div>
+    </div>
+    
+    <div class="table-container" style="max-height: 60vh; overflow-y: auto;">
+        <table class="data-table" id="libTable">
+            <thead style="position: sticky; top: 0; background: var(--bg-dark); z-index: 10;">
+                <tr>
+                    <th>Title</th>
+                    <th>Uploaded By</th>
+                    <th>Date Added</th>
+                    <th style="text-align: right;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mat in materials %}
+                <tr>
+                    <td style="font-weight: 500; font-size: 1.05rem;">
+                        <i class="fa-solid fa-file-pdf" style="color: var(--danger); margin-right: 0.5rem;"></i>
+                        {{ mat.title }}
+                    </td>
+                    <td>
+                        <span class="badge badge-faculty"><i class="fa-solid fa-chalkboard-user"></i> {{ mat.faculty.faculty_profile.full_name if mat.faculty.faculty_profile else 'Faculty' }}</span>
+                    </td>
+                    <td style="color: var(--text-muted); font-size: 0.9rem;">
+                        {{ mat.uploaded_at.strftime('%Y-%m-%d') }}
+                    </td>
+                    <td style="text-align: right;">
+                        <a href="{{ mat.file_url }}" target="_blank" class="btn btn-outline" style="padding: 0.4rem 1rem; font-size: 0.85rem;">
+                            <i class="fa-solid fa-cloud-arrow-down"></i> Access Material
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                        <i class="fa-solid fa-folder-open" style="font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <p>No study materials have been uploaded yet.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    document.getElementById('libSearch').addEventListener('keyup', function() {
+        let filter = this.value.toLowerCase();
+        let rows = document.querySelectorAll('#libTable tbody tr');
+        
+        rows.forEach(row => {
+            let text = row.innerText.toLowerCase();
+            if(text.includes(filter)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}

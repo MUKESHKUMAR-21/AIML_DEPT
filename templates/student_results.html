@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header">
+    <h1 style="font-size: 2rem; font-weight: 700;">Examination Results</h1>
+</div>
+
+<div class="glass-panel animate-fade-in" style="margin-bottom: 2rem;">
+    {% if results %}
+    <div style="overflow-x: auto; border-radius: 12px;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead style="background: rgba(0, 0, 0,0.05); border-bottom: 1px solid var(--glass-border);">
+                <tr>
+                    <th style="padding: 1.2rem 1rem; font-weight: 600; color: var(--text-secondary);">Course Title</th>
+                    <th style="padding: 1.2rem 1rem; font-weight: 600; color: var(--text-secondary); text-align: center;">Maximum Marks</th>
+                    <th style="padding: 1.2rem 1rem; font-weight: 600; color: var(--text-secondary); text-align: center;">Marks Obtained</th>
+                    <th style="padding: 1.2rem 1rem; font-weight: 600; color: var(--text-secondary); text-align: center;">Percentage</th>
+                    <th style="padding: 1.2rem 1rem; font-weight: 600; color: var(--text-secondary); text-align: center;">Grade Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results %}
+                {% set percentage = (result.marks / result.max_marks * 100)|round(1) if result.max_marks > 0 else 0 %}
+                <tr style="border-bottom: 1px solid rgba(0, 0, 0,0.05);">
+                    <td style="padding: 1.2rem 1rem; color: var(--text-primary); font-weight: 500;">
+                        {{ result.subject }}
+                    </td>
+                    <td style="padding: 1.2rem 1rem; color: var(--text-secondary); text-align: center;">
+                        {{ result.max_marks }}
+                    </td>
+                    <td style="padding: 1.2rem 1rem; color: var(--text-primary); font-weight: bold; text-align: center; font-size: 1.1rem;">
+                        {{ result.marks }}
+                    </td>
+                    <td style="padding: 1.2rem 1rem; color: var(--text-secondary); text-align: center;">
+                        {{ percentage }}%
+                    </td>
+                    <td style="padding: 1.2rem 1rem; text-align: center;">
+                        {% if percentage >= 85 %}
+                        <span style="background: rgba(16, 185, 129, 0.1); color: var(--success); padding: 0.4rem 1rem; border-radius: 8px; font-size: 0.85rem; font-weight: bold; border: 1px solid rgba(16, 185, 129, 0.2);">A+ / Excellent</span>
+                        {% elif percentage >= 75 %}
+                        <span style="background: rgba(16, 185, 129, 0.1); color: var(--success); padding: 0.4rem 1rem; border-radius: 8px; font-size: 0.85rem; font-weight: bold; border: 1px solid rgba(16, 185, 129, 0.2);">A / Very Good</span>
+                        {% elif percentage >= 60 %}
+                        <span style="background: rgba(245, 158, 11, 0.1); color: var(--warning); padding: 0.4rem 1rem; border-radius: 8px; font-size: 0.85rem; font-weight: bold; border: 1px solid rgba(245, 158, 11, 0.2);">B / Good</span>
+                        {% elif percentage >= 50 %}
+                        <span style="background: rgba(245, 158, 11, 0.1); color: var(--warning); padding: 0.4rem 1rem; border-radius: 8px; font-size: 0.85rem; font-weight: bold; border: 1px solid rgba(245, 158, 11, 0.2);">C / Pass</span>
+                        {% else %}
+                        <span style="background: rgba(239, 68, 68, 0.1); color: var(--danger); padding: 0.4rem 1rem; border-radius: 8px; font-size: 0.85rem; font-weight: bold; border: 1px solid rgba(239, 68, 68, 0.2);">F / Fail</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 3rem;">
+        <i class="fa-solid fa-file-circle-xmark" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+        <p style="color: var(--text-secondary); font-size: 1.1rem;">No examination results have been published yet.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

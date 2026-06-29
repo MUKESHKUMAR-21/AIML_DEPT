@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header" style="margin-bottom: 2rem;">
+    <h1 style="font-size: 2.2rem; font-weight: 800;">Contact & Support</h1>
+    <p style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 1.1rem;">We're here to help you navigate your academic journey.</p>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+    
+    <!-- Contact Details Panel -->
+    <div class="glass-panel animate-fade-in" style="padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem;">
+        <h2 style="font-size: 1.5rem; color: var(--primary-color); margin-bottom: 1rem;"><i class="fa-solid fa-building-columns"></i> College Details</h2>
+        
+        <div style="display: flex; gap: 1rem; align-items: flex-start;">
+            <i class="fa-solid fa-location-dot" style="color: var(--text-secondary); font-size: 1.5rem; margin-top: 0.2rem;"></i>
+            <div>
+                <h4 style="color: var(--text-primary); font-size: 1.1rem; margin-bottom: 0.2rem;">Campus Address</h4>
+                <p style="color: var(--text-secondary); line-height: 1.5;">AIML Department Block, Engineering Campus,<br>Tech City, Silicon Valley - 560100</p>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            <i class="fa-solid fa-phone" style="color: var(--text-secondary); font-size: 1.3rem;"></i>
+            <div>
+                <h4 style="color: var(--text-primary); font-size: 1.1rem; margin-bottom: 0.2rem;">Phone</h4>
+                <p style="color: var(--text-secondary);">+91 98765 43210</p>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            <i class="fa-solid fa-envelope" style="color: var(--text-secondary); font-size: 1.3rem;"></i>
+            <div>
+                <h4 style="color: var(--text-primary); font-size: 1.1rem; margin-bottom: 0.2rem;">Email Support</h4>
+                <p style="color: var(--text-secondary);">admin.aiml@university.edu</p>
+            </div>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid rgba(0, 0, 0,0.05); margin: 1rem 0;">
+
+        <h2 style="font-size: 1.5rem; color: var(--primary-color); margin-bottom: 1rem;"><i class="fa-solid fa-headset"></i> IT/Admin Support</h2>
+        <p style="color: var(--text-secondary); line-height: 1.5;">For portal login issues, database synchronization, or technical glitches, reach out directly to the system administrator:</p>
+        <div style="background: rgba(0, 0, 0,0.05); padding: 1rem; border-radius: 8px; border: 1px solid rgba(0, 0, 0,0.1);">
+            <p style="color: var(--text-primary); font-weight: bold;"><i class="fa-solid fa-user-shield"></i> Mr. Admin Support</p>
+            <p style="color: var(--text-secondary);"><i class="fa-solid fa-at"></i> techsupport@university.edu</p>
+            <p style="color: var(--text-secondary);"><i class="fa-solid fa-phone"></i> Ext. 404</p>
+        </div>
+    </div>
+
+    <!-- Feedback/Support Ticket Form -->
+    <div class="glass-panel animate-fade-in" style="padding: 2rem; animation-delay: 0.1s;">
+        <h2 style="font-size: 1.5rem; color: var(--text-primary); margin-bottom: 1.5rem;">Send a Message to Admin</h2>
+        
+        <form method="POST" action="{{ url_for('contact') }}">
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Subject / Issue Category</label>
+                <select name="category" required style="width: 100%; padding: 0.8rem; background: rgba(0, 0, 0,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary); font-family: inherit;">
+                    <option value="" disabled selected style="color: black;">-- Select an option --</option>
+                    <option value="login" style="color: black;">Login / Password Issue</option>
+                    <option value="attendance" style="color: black;">Attendance Discrepancy</option>
+                    <option value="results" style="color: black;">Exam Results Query</option>
+                    <option value="general" style="color: black;">General Feedback</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Message Description</label>
+                <textarea name="message" rows="5" required placeholder="Describe your issue or provide feedback here..." style="width: 100%; padding: 0.8rem; background: rgba(0, 0, 0,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary); font-family: inherit; resize: vertical;"></textarea>
+            </div>
+
+            <button type="submit" class="btn" style="width: 100%; padding: 1rem; font-size: 1.1rem; background: var(--primary-color); color: var(--bg-dark); font-weight: 600; display: flex; justify-content: center; gap: 0.5rem; align-items: center;">
+                <i class="fa-solid fa-paper-plane"></i> Submit Request
+            </button>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

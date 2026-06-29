@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Class Schedule{% endblock %}
+
+{% block content %}
+<div class="header" style="margin-bottom: 2rem;">
+    <h1 style="font-size: 2.2rem; font-weight: 800;">Department Time Table</h1>
+    <p style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 1.1rem;">Weekly schedule for AIML B.Tech program.</p>
+</div>
+
+<div class="glass-panel animate-fade-in" style="overflow-x: auto;">
+    <div style="min-width: 800px;">
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem;">
+            {% for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] %}
+            <div>
+                <h3 style="text-align: center; padding: 1rem; background: rgba(0, 0, 0,0.05); border-radius: 8px 8px 0 0; border-bottom: 2px solid var(--primary-color); font-size: 1.1rem; color: var(--text-primary); margin-bottom: 0;">{{ day }}</h3>
+                <div style="background: rgba(0,0,0,0.2); border-radius: 0 0 8px 8px; min-height: 400px; padding: 0.5rem; border: 1px solid var(--glass-border); border-top: none;">
+                    
+                    {% for cls in schedule[day] %}
+                    <div style="background: rgba(0, 0, 0,0.03); border: 1px solid rgba(0, 0, 0,0.1); border-radius: 6px; padding: 0.8rem; margin-bottom: 0.8rem; position: relative; border-left: 3px solid var(--info);">
+                        <div style="font-size: 0.8rem; color: var(--warning); margin-bottom: 0.25rem; font-weight: 600;">
+                            <i class="fa-regular fa-clock"></i> {{ cls.start_time.strftime('%H:%M') }} - {{ cls.end_time.strftime('%H:%M') }}
+                        </div>
+                        <div style="font-weight: 600; font-size: 1rem; margin-bottom: 0.25rem; color: var(--text-primary);">
+                            {{ cls.course }}
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: flex-end;">
+                            <div>
+                                <div><i class="fa-solid fa-chalkboard-user"></i> {{ cls.faculty.faculty_profile.full_name if cls.faculty.faculty_profile else cls.faculty.username }}</div>
+                                <div><i class="fa-solid fa-door-open"></i> Room {{ cls.room_number }}</div>
+                            </div>
+                            
+                            {% if current_user.role in ['admin', 'faculty'] %}
+                            <form method="POST" action="{{ url_for('delete_schedule', class_id=cls.id) }}" style="margin: 0;">
+                                <button type="submit" class="btn btn-outline" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; color: var(--danger); border-color: transparent;" title="Remove Class">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 2rem 0; font-style: italic;">
+                        No classes scheduled
+                    </div>
+                    {% endfor %}
+                    
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% if current_user.role in ['admin', 'faculty'] %}
+<div class="glass-panel animate-fade-in" style="margin-top: 2rem; animation-delay: 0.2s;">
+    <h3 style="margin-bottom: 1.5rem; font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+        <i class="fa-solid fa-calendar-plus" style="color: var(--primary-color);"></i> Add Class to Schedule
+    </h3>
+    
+    <form method="POST" action="{{ url_for('add_schedule') }}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; align-items: end;">
+        <div class="form-group">
+            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Course / Subject</label>
+            <input type="text" name="course" required placeholder="e.g. Machine Learning Lab" style="width: 100%; padding: 0.8rem; background: rgba(0, 0, 0,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary);">
+        </div>
+        <div class="form-group">
+            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Day of Week</label>
+            <select name="day_of_week" required style="width: 100%; padding: 0.8rem; background: rgba(0, 0, 0,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary);">
+                <option value="Monday" style="color: black;">Monday</option>
+                <option value="Tuesday" style="color: black;">Tuesday</option>
+                <option value="Wednesday" style="color: black;">Wednesday</option>
+                <option value="Thursday" style="color: black;">Thursday</option>
+                <option value="Friday" style="color: black;">Friday</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Start Time</label>
+            <input type="time" name="start_time" required style="width: 100%; padding: 0.8rem; background: rgba(0, 0, 0,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary);">
+        </div>
+        <div class="form-group">
+            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">End Time</label>
+            <input type="time" name="end_time" required style="width: 100%; padding: 0.8rem; background: rgba(0, 0, 0,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary);">
+        </div>
+        <div class="form-group">
+            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Room No.</label>
+            <input type="text" name="room_number" required placeholder="e.g. 401A" style="width: 100%; padding: 0.8rem; background: rgba(0, 0, 0,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary);">
+        </div>
+        <div class="form-group">
+            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Assigned Faculty</label>
+            <select name="faculty_id" required style="width: 100%; padding: 0.8rem; background: rgba(0, 0, 0,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary);">
+                {% for fac in faculty_list %}
+                <option value="{{ fac.user_id }}" style="color: black;">{{ fac.full_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.8rem;">Add Class</button>
+        </div>
+    </form>
+</div>
+{% endif %}
+{% endblock %}

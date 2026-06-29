@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+
+{% block title %}Faculty Dashboard{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div>
+        <h2 style="font-size: 2rem; font-weight: 700;">Faculty Portal</h2>
+        <p style="color: var(--text-secondary); margin-top: 0.5rem;">Manage your classes, students, and materials.</p>
+    </div>
+    <span class="badge badge-faculty"><i class="fa-solid fa-chalkboard-user"></i> Faculty Profile</span>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem;">
+    <!-- Profile Card -->
+    <div class="glass-panel animate-fade-in">
+        <h3 style="margin-bottom: 1.5rem; font-size: 1.2rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">
+            Personal Information
+        </h3>
+        
+        {% if profile %}
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <div style="width: 120px; height: 120px; background: rgba(0, 0, 0, 0.1); border: 1px solid var(--glass-border); border-radius: 50%; margin: 0 auto 1.5rem auto; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; font-weight: bold; color: var(--text-primary);">
+                {{ profile.full_name[0] }}
+            </div>
+            <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">{{ profile.full_name }}</h3>
+            <p style="color: var(--text-secondary); font-weight: 500;">{{ profile.designation }}</p>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">
+                <span style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase;">Employee ID</span>
+                <div style="font-weight: 600; font-size: 1.1rem; margin-top: 0.25rem;">{{ profile.employee_id }}</div>
+            </div>
+            <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">
+                <span style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase;">Department</span>
+                <div style="font-weight: 600; font-size: 1.1rem; margin-top: 0.25rem;">AIML</div>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            Profile information is currently not available. Please contact administration.
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Details and Quick Actions -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        
+        <!-- Qualifications Card -->
+        <div class="glass-panel animate-fade-in" style="animation-delay: 0.1s;">
+            <h3 style="margin-bottom: 1.5rem; font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fa-solid fa-graduation-cap" style="color: var(--primary-color);"></i> Qualifications & Expertise
+            </h3>
+            {% if profile %}
+            <p style="line-height: 1.6; color: var(--text-primary);">
+                {{ profile.qualifications }}
+            </p>
+            {% else %}
+            <p style="color: var(--text-muted);">No qualifications listed.</p>
+            {% endif %}
+        </div>
+        
+        <!-- Manage Content Card -->
+        <div class="glass-panel animate-fade-in" style="animation-delay: 0.2s; flex: 1;">
+            <h3 style="margin-bottom: 1.5rem; font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fa-solid fa-plus" style="color: var(--primary-color);"></i> Add Content
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <!-- Upload Material Form -->
+                <form method="POST" action="{{ url_for('faculty_library') }}" style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">
+                    <h4 style="margin-bottom: 1rem; font-size: 1rem;">Upload Material</h4>
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <input type="text" name="title" class="form-control" placeholder="Material Title" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <input type="url" name="file_url" class="form-control" placeholder="File URL (Drive/Link)" required>
+                    </div>
+                    <button type="submit" class="btn btn-outline" style="width: 100%; padding: 0.5rem; font-size: 0.9rem;">Upload</button>
+                </form>
+
+                <!-- Create Assignment Form -->
+                <form method="POST" action="{{ url_for('faculty_assignments') }}" style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">
+                    <h4 style="margin-bottom: 1rem; font-size: 1rem;">Create Assignment</h4>
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <input type="text" name="title" class="form-control" placeholder="Assignment Title" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <input type="datetime-local" name="deadline" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-outline" style="width: 100%; padding: 0.5rem; font-size: 0.9rem;">Create</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="margin-top: 2rem;" class="glass-panel animate-fade-in" style="animation-delay: 0.3s;">
+    <h3 style="margin-bottom: 1.5rem; font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+        <i class="fa-solid fa-folder-open" style="color: var(--primary-color);"></i> My Uploads
+    </h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div>
+            <h4 style="margin-bottom: 1rem;">Study Materials</h4>
+            <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+                {% for mat in materials %}
+                <li style="background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: 6px; display: flex; justify-content: space-between;">
+                    <span>{{ mat.title }}</span>
+                    <a href="{{ mat.file_url }}" target="_blank" style="color: var(--info);"><i class="fa-solid fa-link"></i> View</a>
+                </li>
+                {% else %}
+                <li style="color: var(--text-muted);">No materials uploaded.</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div>
+            <h4 style="margin-bottom: 1rem;">Assignments</h4>
+            <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+                {% for ass in assignments %}
+                <li style="background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: 6px; display: flex; justify-content: space-between;">
+                    <span>{{ ass.title }}</span>
+                    <span style="color: var(--warning); font-size: 0.85rem;">Due: {{ ass.deadline.strftime('%Y-%m-%d') }}</span>
+                </li>
+                {% else %}
+                <li style="color: var(--text-muted);">No assignments created.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="glass-panel animate-fade-in" style="margin-top: 2rem; animation-delay: 0.4s;">
+    <h3 style="margin-bottom: 1.5rem; font-size: 1.2rem; display: flex; align-items: center; justify-content: space-between;">
+        <span><i class="fa-solid fa-users" style="color: var(--primary-color);"></i> My Students</span>
+    </h3>
+    
+    <!-- Section Tabs -->
+    <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">
+        {% for s in sections %}
+        {% if current_section == s %}
+        <a href="{{ url_for('faculty_dashboard', section=s) }}" 
+           style="padding: 0.5rem 1.5rem; border-radius: 6px; text-decoration: none; font-weight: 600; transition: all 0.3s; background: var(--primary-color); color: var(--bg-dark);">
+            Section {{ s }}
+        </a>
+        {% else %}
+        <a href="{{ url_for('faculty_dashboard', section=s) }}" 
+           style="padding: 0.5rem 1.5rem; border-radius: 6px; text-decoration: none; font-weight: 600; transition: all 0.3s; background: rgba(0, 0, 0,0.05); color: var(--text-secondary);">
+            Section {{ s }}
+        </a>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <div style="overflow-x: auto; border-radius: 12px; border: 1px solid var(--glass-border);">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead style="background: rgba(0, 0, 0,0.05); border-bottom: 1px solid var(--glass-border);">
+                <tr>
+                    <th style="padding: 1rem; font-weight: 600; color: var(--text-secondary);">Roll Number</th>
+                    <th style="padding: 1rem; font-weight: 600; color: var(--text-secondary);">Name</th>
+                    <th style="padding: 1rem; font-weight: 600; color: var(--text-secondary);">CGPA</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr style="border-bottom: 1px solid rgba(0, 0, 0,0.05);">
+                    <td style="padding: 1rem; color: var(--text-primary); font-weight: 500;">{{ student.roll_number }}</td>
+                    <td style="padding: 1rem; color: var(--text-primary);">{{ student.full_name }}</td>
+                    <td style="padding: 1rem; color: var(--info);">{{ student.cgpa }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" style="padding: 1rem; text-align: center; color: var(--text-muted);">No students found in this section.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

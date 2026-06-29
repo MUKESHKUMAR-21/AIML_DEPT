@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AIML Department{% endblock %}</title>
+    <meta name="description" content="Welcome to the AIML Department Webpage.">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="{{ url_for('index') }}" class="brand-logo">
+                    <i class="fa-solid fa-microchip"></i>
+                    AIML Dept.
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="{{ url_for('index') }}" class="nav-item {% if request.endpoint == 'index' %}active{% endif %}">
+                    <i class="fa-solid fa-house"></i>
+                    Home
+                </a>
+                
+                {% if current_user.is_authenticated %}
+                    {% if current_user.role == 'admin' %}
+                    <a href="{{ url_for('admin_dashboard') }}" class="nav-item {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        Dashboard
+                        {% if unread_counts.get('support', 0) > 0 %}
+                        <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
+                    <a href="{{ url_for('schedule') }}" class="nav-item {% if request.endpoint == 'schedule' %}active{% endif %}">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        Class Schedule
+                    </a>
+                    <a href="#" class="nav-item" onclick="alert('Batch Attendance Upload module is under construction.')">
+                        <i class="fa-solid fa-file-csv"></i>
+                        Upload Attendance
+                    </a>
+                    <a href="#" class="nav-item" onclick="alert('Batch Results Upload module is under construction.')">
+                        <i class="fa-solid fa-upload"></i>
+                        Upload Results
+                    </a>
+                    <a href="{{ url_for('admin_leaves') }}" class="nav-item {% if request.endpoint == 'admin_leaves' %}active{% endif %}">
+                        <i class="fa-solid fa-person-walking-arrow-right"></i>
+                        Manage Leaves
+                        {% if unread_counts.get('leaves', 0) > 0 %}
+                        <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
+                    {% elif current_user.role == 'faculty' %}
+                    <a href="{{ url_for('faculty_dashboard') }}" class="nav-item {% if request.endpoint == 'faculty_dashboard' %}active{% endif %}">
+                        <i class="fa-solid fa-chalkboard-user"></i>
+                        Dashboard
+                    </a>
+                    <a href="{{ url_for('schedule') }}" class="nav-item {% if request.endpoint == 'schedule' %}active{% endif %}">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        Class Schedule
+                    </a>
+                    <a href="{{ url_for('faculty_attendance') }}" class="nav-item {% if request.endpoint == 'faculty_attendance' %}active{% endif %}">
+                        <i class="fa-solid fa-clipboard-user"></i>
+                        Mark Attendance
+                    </a>
+                    <a href="{{ url_for('faculty_results') }}" class="nav-item {% if request.endpoint == 'faculty_results' %}active{% endif %}">
+                        <i class="fa-solid fa-square-poll-vertical"></i>
+                        Post Results
+                    </a>
+                    <a href="{{ url_for('faculty_assignments') }}" class="nav-item {% if request.endpoint == 'faculty_assignments' %}active{% endif %}">
+                        <i class="fa-solid fa-file-pen"></i>
+                        Assignments
+                        {% if unread_counts.get('assignments', 0) > 0 %}
+                        <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
+                    <a href="{{ url_for('faculty_library') }}" class="nav-item {% if request.endpoint == 'faculty_library' %}active{% endif %}">
+                        <i class="fa-solid fa-book-bookmark"></i>
+                        E-Library
+                    </a>
+                    <a href="{{ url_for('admin_leaves') }}" class="nav-item {% if request.endpoint == 'admin_leaves' %}active{% endif %}">
+                        <i class="fa-solid fa-person-walking-arrow-right"></i>
+                        Manage Leaves
+                        {% if unread_counts.get('leaves', 0) > 0 %}
+                        <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
+                    {% elif current_user.role == 'student' %}
+                    <a href="{{ url_for('student_dashboard') }}" class="nav-item {% if request.endpoint == 'student_dashboard' %}active{% endif %}">
+                        <i class="fa-solid fa-user-graduate"></i>
+                        Dashboard
+                    </a>
+                    <a href="{{ url_for('schedule') }}" class="nav-item {% if request.endpoint == 'schedule' %}active{% endif %}">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        Class Schedule
+                    </a>
+                    <a href="{{ url_for('student_attendance') }}" class="nav-item {% if request.endpoint == 'student_attendance' %}active{% endif %}">
+                        <i class="fa-solid fa-clipboard-check"></i>
+                        My Attendance
+                        {% if unread_counts.get('attendance', 0) > 0 %}
+                        <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
+                    <a href="{{ url_for('student_results') }}" class="nav-item {% if request.endpoint == 'student_results' %}active{% endif %}">
+                        <i class="fa-solid fa-ranking-star"></i>
+                        Exam Results
+                        {% if unread_counts.get('results', 0) > 0 %}
+                        <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
+                    <a href="{{ url_for('student_assignments') }}" class="nav-item {% if request.endpoint == 'student_assignments' %}active{% endif %}">
+                        <i class="fa-solid fa-file-pen"></i>
+                        Assignments
+                        {% if unread_counts.get('assignments', 0) > 0 %}
+                        <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
+                    <a href="{{ url_for('student_library') }}" class="nav-item {% if request.endpoint == 'student_library' %}active{% endif %}">
+                        <i class="fa-solid fa-book-bookmark"></i>
+                        E-Library
+                        {% if unread_counts.get('library', 0) > 0 %}
+                        <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
+                    <a href="{{ url_for('student_leaves') }}" class="nav-item {% if request.endpoint == 'student_leaves' %}active{% endif %}">
+                        <i class="fa-solid fa-person-walking-arrow-right"></i>
+                        Leave Requests
+                        {% if unread_counts.get('leaves', 0) > 0 %}
+                        <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
+                    {% endif %}
+                    
+                    <div style="margin: 1.5rem 0; border-top: 1px solid rgba(0, 0, 0,0.05);"></div>
+                    
+                    <a href="{{ url_for('placements') }}" class="nav-item {% if request.endpoint == 'placements' %}active{% endif %}">
+                        <i class="fa-solid fa-briefcase"></i>
+                        Placements
+                    </a>
+                    <a href="{{ url_for('contact') }}" class="nav-item {% if request.endpoint == 'contact' %}active{% endif %}">
+                        <i class="fa-solid fa-headset"></i>
+                        Contact Support
+                    </a>
+                {% endif %}
+            </nav>
+
+            <div class="sidebar-footer">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('logout') }}" class="nav-item" style="color: var(--danger);">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        Logout
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="nav-item {% if request.endpoint == 'login' %}active{% endif %}" style="color: var(--primary-color);">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                        Login
+                    </a>
+                {% endif %}
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                {% if current_user.is_authenticated %}
+                <div style="display: flex; align-items: center; gap: 1.5rem;">
+                    <!-- Notification Bell -->
+                    <div style="position: relative; cursor: pointer; color: var(--text-secondary);" onclick="toggleDropdown('notificationDropdown')">
+                        <i class="fa-solid fa-bell" style="font-size: 1.2rem;"></i>
+                        {% if unread_notifications %}
+                        <span style="position: absolute; top: -5px; right: -5px; background: var(--primary-color); color: var(--bg-dark); border-radius: 50%; width: 16px; height: 16px; font-size: 0.65rem; display: flex; align-items: center; justify-content: center; font-weight: bold;">{{ unread_notifications|length }}</span>
+                        {% endif %}
+                        
+                        <!-- Notification Dropdown -->
+                        <div id="notificationDropdown" class="dropdown-menu" style="right: -10px; min-width: 300px;">
+                            <div class="dropdown-header">Recent Notifications</div>
+                            {% for notif in unread_notifications %}
+                            <a href="#" class="dropdown-item">
+                                <span style="font-size: 0.9rem; color: var(--text-primary);">{{ notif.message }}</span>
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">{{ notif.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                            </a>
+                            {% else %}
+                            <div class="dropdown-item" style="text-align: center; color: var(--text-muted);">No new notifications</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- User Profile -->
+                    <div style="position: relative; cursor: pointer;" onclick="toggleDropdown('profileDropdown')">
+                        <div class="user-profile-menu">
+                            <span style="text-transform: capitalize;">{{ current_user.role }}</span>
+                            <div class="avatar">
+                                {{ current_user.username[0]|upper }}
+                            </div>
+                        </div>
+                        
+                        <!-- Profile Dropdown -->
+                        <div id="profileDropdown" class="dropdown-menu" style="min-width: 280px;">
+                            <div class="dropdown-header" style="display: flex; align-items: center; gap: 1rem;">
+                                <div class="avatar" style="width: 50px; height: 50px; font-size: 1.5rem;">{{ current_user.username[0]|upper }}</div>
+                                <div>
+                                    <div style="font-size: 1.1rem; color: var(--text-primary);">{{ user_profile.full_name if user_profile else current_user.username }}</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-secondary); text-transform: capitalize;">{{ current_user.role }}</div>
+                                </div>
+                            </div>
+                            
+                            {% if current_user.role == 'student' and user_profile %}
+                            <div style="padding: 1rem; border-bottom: 1px solid var(--glass-border);">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span style="color: var(--text-secondary); font-size: 0.85rem;">Roll Number</span>
+                                    <span style="font-weight: 500;">{{ user_profile.roll_number }}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span style="color: var(--text-secondary); font-size: 0.85rem;">Year / Sem</span>
+                                    <span style="font-weight: 500;">{{ user_profile.year }} / {{ user_profile.semester }}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: var(--text-secondary); font-size: 0.85rem;">CGPA</span>
+                                    <span style="font-weight: 700; color: var(--success);">{{ user_profile.cgpa }}</span>
+                                </div>
+                            </div>
+                            {% elif current_user.role == 'faculty' and user_profile %}
+                            <div style="padding: 1rem; border-bottom: 1px solid var(--glass-border);">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span style="color: var(--text-secondary); font-size: 0.85rem;">Emp ID</span>
+                                    <span style="font-weight: 500;">{{ user_profile.employee_id }}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: var(--text-secondary); font-size: 0.85rem;">Designation</span>
+                                    <span style="font-weight: 500;">{{ user_profile.designation }}</span>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <a href="{{ url_for('logout') }}" class="dropdown-item" style="color: var(--danger); flex-direction: row; align-items: center; gap: 0.5rem;">
+                                <i class="fa-solid fa-right-from-bracket"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="user-profile-menu">
+                    <span style="color: var(--text-secondary);">Guest Visitor</span>
+                </div>
+                {% endif %}
+            </header>
+
+            <!-- Page Content -->
+            <div class="page-container">
+                <!-- Flash Messages -->
+                <div class="flash-messages">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }}">
+                                    {% if category == 'success' %}<i class="fa-solid fa-circle-check"></i>{% endif %}
+                                    {% if category == 'danger' %}<i class="fa-solid fa-circle-exclamation"></i>{% endif %}
+                                    {% if category == 'info' %}<i class="fa-solid fa-circle-info"></i>{% endif %}
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                </div>
+
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Auto-dismiss flash messages after 5 seconds
+        setTimeout(() => {
+            const flashes = document.querySelectorAll('.alert');
+            flashes.forEach(flash => {
+                flash.style.opacity = '0';
+                flash.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => flash.remove(), 500);
+            });
+        }, 5000);
+
+        // Dropdown toggle logic
+        function toggleDropdown(id) {
+            const dropdown = document.getElementById(id);
+            // Close all other dropdowns
+            document.querySelectorAll('.dropdown-menu').forEach(el => {
+                if (el.id !== id) {
+                    el.classList.remove('show');
+                }
+            });
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.user-profile-menu') && 
+                !event.target.closest('.fa-bell') && 
+                !event.target.closest('.dropdown-menu')) {
+                document.querySelectorAll('.dropdown-menu').forEach(el => {
+                    el.classList.remove('show');
+                });
+            }
+        });
+
+        // Mouse tracking for interactive glow on cards
+        document.addEventListener('mousemove', e => {
+            const cards = document.querySelectorAll('.glass-panel, .stat-card');
+            for(const card of cards) {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            }
+        });
+    </script>
+</body>
+</html>

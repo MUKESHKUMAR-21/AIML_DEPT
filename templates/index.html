@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}AIML Department - Home{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Artificial Intelligence & <br>Machine Learning</h1>
+    <p>Welcome to the official portal for the AIML Department. Connect, learn, and grow with our vibrant academic community in a modern environment.</p>
+    
+    {% if not current_user.is_authenticated %}
+        <div style="margin-top: 2rem;">
+            <a href="{{ url_for('login') }}" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2.5rem;">
+                <i class="fa-solid fa-bolt"></i> Access Portal
+            </a>
+        </div>
+    {% else %}
+        <div style="margin-top: 2rem;">
+            {% if current_user.role == 'admin' %}
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2.5rem;">Go to Dashboard</a>
+            {% elif current_user.role == 'faculty' %}
+                <a href="{{ url_for('faculty_dashboard') }}" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2.5rem;">Go to Dashboard</a>
+            {% elif current_user.role == 'student' %}
+                <a href="{{ url_for('student_dashboard') }}" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2.5rem;">Go to Dashboard</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+
+<div class="dashboard-grid">
+    <div class="glass-panel animate-fade-in" style="animation-delay: 0.1s;">
+        <div class="stat-icon icon-blue" style="margin-bottom: 1.5rem; width: 50px; height: 50px; font-size: 1.5rem;">
+            <i class="fa-solid fa-microscope"></i>
+        </div>
+        <h3 style="margin-bottom: 1rem;">Cutting-Edge Research</h3>
+        <p style="color: var(--text-secondary); line-height: 1.6;">Explore our latest publications and research projects in the fields of Deep Learning, NLP, and Computer Vision.</p>
+    </div>
+    <div class="glass-panel animate-fade-in" style="animation-delay: 0.2s;">
+        <div class="stat-icon icon-purple" style="margin-bottom: 1.5rem; width: 50px; height: 50px; font-size: 1.5rem;">
+            <i class="fa-solid fa-user-tie"></i>
+        </div>
+        <h3 style="margin-bottom: 1rem;">World-Class Faculty</h3>
+        <p style="color: var(--text-secondary); line-height: 1.6;">Learn from industry experts and renowned academics dedicated to student success and technological advancement.</p>
+    </div>
+    <div class="glass-panel animate-fade-in" style="animation-delay: 0.3s;">
+        <div class="stat-icon icon-green" style="margin-bottom: 1.5rem; width: 50px; height: 50px; font-size: 1.5rem;">
+            <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <h3 style="margin-bottom: 1rem;">Student Excellence</h3>
+        <p style="color: var(--text-secondary); line-height: 1.6;">Join a diverse community of passionate learners and future innovators shaping the world of AI.</p>
+    </div>
+</div>
+
+<div style="margin-top: 4rem; margin-bottom: 2rem;">
+    <h2 style="font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 2rem;">
+        <span style="color: var(--primary-color);">Student</span> Achievements
+    </h2>
+    <div class="dashboard-grid">
+        <!-- Achievement 1 -->
+        <div class="glass-panel animate-fade-in" style="animation-delay: 0.4s; display: flex; flex-direction: column; gap: 1rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 48px; height: 48px; background: rgba(0, 0, 0, 0.1); border: 1px solid var(--glass-border); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--text-primary);">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <div>
+                    <h4 style="font-size: 1.1rem; font-weight: 600;">Global AI Hackathon 2025</h4>
+                    <span class="badge badge-student" style="margin-top: 0.25rem;">1st Place Winners</span>
+                </div>
+            </div>
+            <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5;">Our 3rd-year student team "NeuralKnights" secured first place among 500+ international teams with their innovative AI healthcare diagnostic tool.</p>
+        </div>
+
+        <!-- Achievement 2 -->
+        <div class="glass-panel animate-fade-in" style="animation-delay: 0.5s; display: flex; flex-direction: column; gap: 1rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 48px; height: 48px; background: rgba(0, 0, 0, 0.1); border: 1px solid var(--glass-border); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--text-primary);">
+                    <i class="fa-solid fa-file-contract"></i>
+                </div>
+                <div>
+                    <h4 style="font-size: 1.1rem; font-weight: 600;">NeurIPS Publication</h4>
+                    <span class="badge badge-faculty" style="margin-top: 0.25rem;">Research Excellence</span>
+                </div>
+            </div>
+            <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5;">Final year student Ada Lovelace co-authored a groundbreaking paper on "Efficient Transformer Models" accepted at NeurIPS conference.</p>
+        </div>
+
+        <!-- Achievement 3 -->
+        <div class="glass-panel animate-fade-in" style="animation-delay: 0.6s; display: flex; flex-direction: column; gap: 1rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 48px; height: 48px; background: rgba(0, 0, 0, 0.1); border: 1px solid var(--glass-border); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--text-primary);">
+                    <i class="fa-solid fa-briefcase"></i>
+                </div>
+                <div>
+                    <h4 style="font-size: 1.1rem; font-weight: 600;">Top-Tier Internships</h4>
+                    <span class="badge badge-admin" style="margin-top: 0.25rem;">Career Milestone</span>
+                </div>
+            </div>
+            <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5;">Over 85% of our pre-final year students secured summer internships at leading tech giants including Google, Microsoft, and OpenAI.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

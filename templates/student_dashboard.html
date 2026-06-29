@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div>
+        <h2 style="font-size: 2rem; font-weight: 700;">Student Portal</h2>
+        <p style="color: var(--text-secondary); margin-top: 0.5rem;">Track your academic progress and access resources.</p>
+    </div>
+    <span class="badge badge-student"><i class="fa-solid fa-user-graduate"></i> Enrolled Student</span>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem;">
+    <!-- Profile Card -->
+    <div class="glass-panel animate-fade-in">
+        <h3 style="margin-bottom: 1.5rem; font-size: 1.2rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">
+            Academic Profile
+        </h3>
+        
+        {% if profile %}
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <div style="width: 120px; height: 120px; background: rgba(0, 0, 0, 0.1); border: 1px solid var(--glass-border); border-radius: 50%; margin: 0 auto 1.5rem auto; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; font-weight: bold; color: var(--text-primary);">
+                {{ profile.full_name[0] }}
+            </div>
+            <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">{{ profile.full_name }}</h3>
+            <p style="color: var(--text-secondary); font-weight: 500;">Roll: {{ profile.roll_number }}</p>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">
+                <span style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase;">Program</span>
+                <div style="font-weight: 600; font-size: 1.1rem; margin-top: 0.25rem;">B.Tech in AIML</div>
+            </div>
+            <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <span style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase;">Year / Sem</span>
+                    <div style="font-weight: 600; font-size: 1.1rem; margin-top: 0.25rem;">{{ profile.year }} / {{ profile.semester }}</div>
+                </div>
+                <div style="text-align: right;">
+                    <span style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase;">Current CGPA</span>
+                    <div style="font-weight: 700; font-size: 1.4rem; color: var(--success); margin-top: 0.25rem;">{{ profile.cgpa }}</div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            Academic record is currently not available. Please contact administration.
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Coursework and Resources -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        
+        <!-- Progress Card -->
+        <div class="glass-panel animate-fade-in" style="animation-delay: 0.1s;">
+            <h3 style="margin-bottom: 1.5rem; font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fa-solid fa-chart-line" style="color: var(--primary-color);"></i> Current Semester Progress
+            </h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                {% if aggregated_attendance %}
+                    {% for course, stats in aggregated_attendance.items() %}
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 500;">
+                            <span>{{ course }}</span>
+                            <span>{{ stats.percentage }}%</span>
+                        </div>
+                        <div style="width: 100%; background: rgba(0,0,0,0.1); border-radius: 10px; height: 18px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);">
+                            <div {% if true %}style="height: 100%; width: {{ stats.percentage }}%; background: var(--success); border-radius: 10px; display: flex; align-items: center; justify-content: center; transition: width 1s ease-in-out;"{% endif %}>
+                                {% if stats.percentage > 5 %}
+                                <span style="color: white; font-size: 0.75rem; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">{{ stats.percentage }}%</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">No attendance data recorded yet.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Materials and Assignments -->
+        <div class="glass-panel animate-fade-in" style="animation-delay: 0.2s; flex: 1;">
+            <h3 style="margin-bottom: 1.5rem; font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fa-solid fa-book-open" style="color: var(--primary-color);"></i> Course Resources
+            </h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div>
+                    <h4 style="margin-bottom: 0.75rem; font-size: 1rem; color: var(--text-secondary);">Study Materials</h4>
+                    <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+                        {% for mat in materials %}
+                        <li style="background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: 6px; display: flex; justify-content: space-between;">
+                            <span><i class="fa-solid fa-file-pdf" style="color: var(--danger); margin-right: 0.5rem;"></i> {{ mat.title }}</span>
+                            <a href="{{ mat.file_url }}" target="_blank" style="color: var(--info); text-decoration: none;"><i class="fa-solid fa-download"></i></a>
+                        </li>
+                        {% else %}
+                        <li style="color: var(--text-muted); font-size: 0.9rem;">No materials available.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 style="margin-bottom: 0.75rem; font-size: 1rem; color: var(--text-secondary);">Active Assignments</h4>
+                    <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+                        {% for ass in assignments %}
+                        <li style="background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+                            <span>{{ ass.title }}</span>
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <span style="color: var(--warning); font-size: 0.8rem;"><i class="fa-solid fa-clock"></i> {{ ass.deadline.strftime('%Y-%m-%d') }}</span>
+                                <button class="btn btn-primary" style="padding: 0.2rem 0.6rem; font-size: 0.8rem;">Submit</button>
+                            </div>
+                        </li>
+                        {% else %}
+                        <li style="color: var(--text-muted); font-size: 0.9rem;">No pending assignments.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Announcements Section -->
+<div style="margin-top: 2rem;" class="glass-panel animate-fade-in" style="animation-delay: 0.3s;">
+    <h3 style="margin-bottom: 1.5rem; font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+        <i class="fa-solid fa-bullhorn" style="color: var(--primary-color);"></i> Announcements
+    </h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+        {% for ann in announcements %}
+        <div style="padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 8px; border-top: 3px solid var(--primary-color);">
+            <h4 style="font-weight: 600; font-size: 1.1rem; margin-bottom: 0.5rem;">{{ ann.title }}</h4>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">{{ ann.content }}</p>
+            <small style="color: var(--text-muted); font-size: 0.8rem;">{{ ann.date_posted.strftime('%Y-%m-%d') }}</small>
+        </div>
+        {% else %}
+        <p style="color: var(--text-muted);">No announcements.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Recent Results Section -->
+<div style="margin-top: 2rem;" class="glass-panel animate-fade-in" style="animation-delay: 0.4s;">
+    <h3 style="margin-bottom: 1.5rem; font-size: 1.2rem; display: flex; align-items: center; justify-content: space-between;">
+        <span style="display: flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-square-poll-vertical" style="color: var(--primary-color);"></i> Recent Results</span>
+        <a href="{{ url_for('student_results') }}" style="font-size: 0.9rem; color: var(--info); text-decoration: none;">View All <i class="fa-solid fa-arrow-right"></i></a>
+    </h3>
+    <div style="overflow-x: auto; border-radius: 12px; border: 1px solid var(--glass-border);">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead style="background: rgba(0, 0, 0,0.05); border-bottom: 1px solid var(--glass-border);">
+                <tr>
+                    <th style="padding: 1rem; font-weight: 600; color: var(--text-secondary);">Course Title</th>
+                    <th style="padding: 1rem; font-weight: 600; color: var(--text-secondary); text-align: center;">Score</th>
+                    <th style="padding: 1rem; font-weight: 600; color: var(--text-secondary); text-align: center;">Grade</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results[:5] %}
+                {% set percentage = (result.marks / result.max_marks * 100)|round(1) if result.max_marks > 0 else 0 %}
+                <tr style="border-bottom: 1px solid rgba(0, 0, 0,0.05);">
+                    <td style="padding: 1rem; color: var(--text-primary); font-weight: 500;">{{ result.subject }}</td>
+                    <td style="padding: 1rem; color: var(--text-primary); text-align: center; font-weight: bold;">
+                        {{ result.marks }} <span style="color: var(--text-muted); font-size: 0.85rem; font-weight: normal;">/ {{ result.max_marks }}</span>
+                    </td>
+                    <td style="padding: 1rem; text-align: center;">
+                        {% if percentage >= 85 %}
+                        <span style="color: var(--success); font-weight: bold;">A+</span>
+                        {% elif percentage >= 75 %}
+                        <span style="color: var(--success); font-weight: bold;">A</span>
+                        {% elif percentage >= 60 %}
+                        <span style="color: var(--warning); font-weight: bold;">B</span>
+                        {% elif percentage >= 50 %}
+                        <span style="color: var(--warning); font-weight: bold;">C</span>
+                        {% else %}
+                        <span style="color: var(--danger); font-weight: bold;">F</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" style="padding: 1.5rem; text-align: center; color: var(--text-muted);">No results published yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

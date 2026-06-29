@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header">
+    <h1 style="font-size: 2rem; font-weight: 700;">Post Examination Results</h1>
+</div>
+
+<div class="glass-panel animate-fade-in" style="margin-bottom: 2rem; padding: 2rem;">
+    <!-- Section Tabs -->
+    <div style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">
+        {% for s in sections %}
+        {% if current_section == s %}
+        <a href="{{ url_for('faculty_results', section=s) }}" 
+           style="padding: 0.5rem 1.5rem; border-radius: 6px; text-decoration: none; font-weight: 600; transition: all 0.3s; background: var(--primary-color); color: var(--bg-dark);">
+            Section {{ s }}
+        </a>
+        {% else %}
+        <a href="{{ url_for('faculty_results', section=s) }}" 
+           style="padding: 0.5rem 1.5rem; border-radius: 6px; text-decoration: none; font-weight: 600; transition: all 0.3s; background: rgba(0, 0, 0,0.05); color: var(--text-secondary);">
+            Section {{ s }}
+        </a>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <form method="POST" action="{{ url_for('faculty_results') }}">
+        <input type="hidden" name="section" value="{{ current_section }}">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+            
+            <!-- Course Selection -->
+            <div class="form-group">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-weight: 500;">Select Course</label>
+                <select name="course" required style="width: 100%; padding: 0.8rem; background: rgba(0, 0, 0,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary); font-family: inherit;">
+                    <option value="" disabled selected>-- Choose Course --</option>
+                    {% for course in courses %}
+                    <option value="{{ course }}" style="color: black;">{{ course }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Max Marks -->
+            <div class="form-group">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-weight: 500;">Maximum Marks</label>
+                <input type="number" name="max_marks" value="100" min="1" required style="width: 100%; padding: 0.8rem; background: rgba(0, 0, 0,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary); font-family: inherit;">
+            </div>
+            
+        </div>
+
+        <div style="overflow-x: auto; margin-bottom: 2rem; border-radius: 12px; border: 1px solid var(--glass-border);">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead style="background: rgba(0, 0, 0,0.05); border-bottom: 1px solid var(--glass-border);">
+                    <tr>
+                        <th style="padding: 1rem; font-weight: 600; color: var(--text-secondary);">Roll Number</th>
+                        <th style="padding: 1rem; font-weight: 600; color: var(--text-secondary);">Student Name</th>
+                        <th style="padding: 1rem; font-weight: 600; color: var(--text-secondary); text-align: right;">Marks Obtained</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr style="border-bottom: 1px solid rgba(0, 0, 0,0.05);">
+                        <td style="padding: 1rem; color: var(--text-primary); font-weight: 500;">
+                            {{ student.student_profile.roll_number if student.student_profile else 'N/A' }}
+                        </td>
+                        <td style="padding: 1rem; color: var(--text-primary);">
+                            {{ student.student_profile.full_name if student.student_profile else student.username }}
+                        </td>
+                        <td style="padding: 1rem; text-align: right;">
+                            <input type="number" name="marks_{{ student.id }}" step="0.1" min="0" placeholder="e.g. 85.5" style="width: 120px; padding: 0.5rem; background: rgba(0, 0, 0,0.05); border: 1px solid var(--glass-border); border-radius: 6px; color: var(--text-primary); text-align: center; font-family: inherit;">
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div style="text-align: right;">
+            <button type="submit" class="btn" style="padding: 0.8rem 2rem; background: var(--primary-color); color: var(--bg-dark); font-weight: 600;">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Upload Results
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

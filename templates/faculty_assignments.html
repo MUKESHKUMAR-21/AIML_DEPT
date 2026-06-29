@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Assignments{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div>
+        <h2 style="font-size: 2rem; font-weight: 700;">Assignments Dashboard</h2>
+        <p style="color: var(--text-secondary); margin-top: 0.5rem;">Create assignments and review student submissions.</p>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem;">
+    <!-- Post Assignment Form -->
+    <div class="glass-panel animate-fade-in">
+        <h3 style="margin-bottom: 1.5rem; font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-plus-circle" style="color: var(--primary-color);"></i> Publish Assignment
+        </h3>
+        <form method="POST" action="{{ url_for('faculty_assignments') }}">
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Assignment Title</label>
+                <input type="text" name="title" required style="width: 100%; padding: 0.8rem; background: rgba(0, 0, 0,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary);">
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Description</label>
+                <textarea name="description" rows="3" style="width: 100%; padding: 0.8rem; background: rgba(0, 0, 0,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary); resize: vertical;"></textarea>
+            </div>
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Deadline</label>
+                <input type="datetime-local" name="deadline" required style="width: 100%; padding: 0.8rem; background: rgba(0, 0, 0,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary);">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Publish Assignment</button>
+        </form>
+    </div>
+
+    <!-- Active Assignments & Submissions -->
+    <div class="glass-panel animate-fade-in" style="animation-delay: 0.1s;">
+        <h3 style="margin-bottom: 1.5rem; font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-list-check" style="color: var(--primary-color);"></i> Active Assignments
+        </h3>
+        
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            {% for assignment in assignments %}
+            <div style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 8px; border-left: 3px solid var(--primary-color);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                    <div>
+                        <h4 style="font-weight: 600; font-size: 1.2rem; margin-bottom: 0.25rem;">{{ assignment.title }}</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0;">{{ assignment.description }}</p>
+                    </div>
+                    <span class="badge badge-warning" style="font-size: 0.8rem;">Due: {{ assignment.deadline.strftime('%Y-%m-%d %H:%M') }}</span>
+                </div>
+                
+                <h5 style="margin: 1rem 0 0.5rem 0; font-size: 1rem; color: var(--info);">Submissions</h5>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                        <thead style="background: rgba(0, 0, 0,0.05); border-bottom: 1px solid var(--glass-border);">
+                            <tr>
+                                <th style="padding: 0.5rem; text-align: left;">Student ID</th>
+                                <th style="padding: 0.5rem; text-align: left;">Date Submitted</th>
+                                <th style="padding: 0.5rem; text-align: left;">Status</th>
+                                <th style="padding: 0.5rem; text-align: center;">File</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set sub_found = false %}
+                            {% for sub in submissions %}
+                                {% if sub.assignment_id == assignment.id %}
+                                {% set sub_found = true %}
+                                <tr style="border-bottom: 1px solid rgba(0, 0, 0,0.02);">
+                                    <td style="padding: 0.5rem;">#{{ sub.student_id }}</td>
+                                    <td style="padding: 0.5rem; color: var(--text-muted);">{{ sub.submitted_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td style="padding: 0.5rem;">
+                                        <span class="badge badge-success" style="font-size: 0.7rem;">{{ sub.status }}</span>
+                                    </td>
+                                    <td style="padding: 0.5rem; text-align: center;">
+                                        <a href="{{ sub.file_path }}" target="_blank" style="color: var(--info);"><i class="fa-solid fa-file-arrow-down"></i></a>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                            {% if not sub_found %}
+                            <tr>
+                                <td colspan="4" style="padding: 1rem; text-align: center; color: var(--text-muted);">No submissions yet.</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% else %}
+            <p style="color: var(--text-muted);">You have not published any assignments yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
